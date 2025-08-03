@@ -60,3 +60,22 @@ cd chaturgpt
 pip install -r requirements.txt
 streamlit run streamlit_app.py
 
+🌍 Future Scope
+Add support for Indian languages (Hindi, Telugu, etc.)
+
+Host on HuggingFace Spaces or Dify.ai
+
+Enable audio input/output for accessibility
+
+Integrate chatbot into mobile or desktop clients
+
+Expand to web search + personal data (calendar, notes, etc.)
+
+👥 Team
+Saheel Yadav (Team Lead)
+
+[Add remaining team members here]
+
+📢 License
+MIT License - Open Source and Free to Use
+
