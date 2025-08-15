@@ -1,81 +1,66 @@
-# 🧠 ChaturGPT – AI Assistant for Your Own Data
+# Chatur GPT – Multilingual Document Q&A App
 
-**ChaturGPT** is an open-source, customizable AI assistant that lets you chat with your own documents, datasets, and knowledge base — in a secure, offline-friendly environment. Built with LlamaIndex, LangChain, and GPT4All, it aims to empower users with private, intelligent search over local data using natural language queries.
-
----
-
-## 🚀 Project Goal
-
-To build an AI assistant that:
-- Understands and answers questions based on user-uploaded documents
-- Runs on local or open-source LLMs without relying on commercial APIs
-- Supports multilingual Indian languages (future scope)
-- Is lightweight, community-driven, and privacy-respecting
+Chatur GPT is a **Streamlit-based universal document intelligence tool** that can **ingest, summarize, and answer questions** from documents in multiple formats and languages.  
+It’s built for speed, accuracy, and a clean, intuitive UI.
 
 ---
 
-## 🧩 Tech Stack
+## 🚀 Features
 
-| Component         | Technology                     |
-|------------------|--------------------------------|
-| LLM Interface     | LlamaIndex + LangChain         |
-| Language Model    | GPT4All (local inference)      |
-| Frontend          | Streamlit                      |
-| Backend           | Python                         |
-| Data Storage      | File-based vector index (FAISS)|
-| Deployment        | HuggingFace / Local Server     |
+- **Multi‑format document ingestion**  
+  Supports PDF, DOCX, TXT, and CSV.
 
----
+- **Multilingual Q&A**  
+  Ask questions in any supported language; answers adapt to your input.
 
-## 📦 Features
+- **Semantic Search**  
+  Find the most relevant chunks instantly using embedding models.
 
-- 🔍 Natural language querying over PDFs, text, and web links
-- 💾 Works offline with open-source LLMs (GPT4All)
-- 🧠 RAG architecture using LangChain & LlamaIndex
-- 🧑‍💻 Streamlit-based web UI
-- 📚 Document ingestion, parsing & chunking
-- 🌐 Ready for multilingual support (future scope)
+- **Persistent Database**  
+  Store and recall processed documents between sessions with ChromaDB.
+
+- **Caching for Speed**  
+  Fast repeat queries thanks to integrated caching.
+
+- **Clean UI & UX**  
+  Streamlined design for distraction‑free interaction.
 
 ---
 
-## 📁 Folder Structure
+2- Create a virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate     # Linux/Mac
+venv\Scripts\activate        # Windows
 
-```bash
-chaturgpt/
-├── data/                # Uploaded documents
-├── app/                 # Core backend logic
-│   ├── loader.py
-│   ├── vector_store.py
-│   └── chat_engine.py
-├── streamlit_app.py     # UI entry point
-├── requirements.txt
-├── README.md
-└── docs/
-    └── user_acquisition.md
-
-🔧 SET UP INSTRUCTUIONS
-
-git clone https://code.swecha.org/SaheelYadav06/chaturgpt.git
-cd chaturgpt
+3- Install dependencies
 pip install -r requirements.txt
-streamlit run streamlit_app.py
 
-🌍 Future Scope
-Add support for Indian languages (Hindi, Telugu, etc.)
+💡 Future Improvements
+- Add cloud deployment (Streamlit Cloud / Hugging Face Spaces)
+- Enhance UI with theme customization
+- Expand multilingual coverage with additional models
 
-Host on HuggingFace Spaces or Dify.ai
+👤 Author
+Saheel – passionate about universal document intelligence, multilingual NLP, and clean, user‑friendly design.
 
-Enable audio input/output for accessibility
+📜 License
+This project is licensed under the MIT License — see the LICENSE file for details.
 
-Integrate chatbot into mobile or desktop clients
+---
 
-Expand to web search + personal data (calendar, notes, etc.)
 
-👥 Team
-Saheel Yadav (Team Lead)
+
 
-[Add remaining team members here]
 
-📢 License
-MIT License - Open Source and Free to Use
 
+- 
+
+- 
+
+
+## 📦 Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://code.swecha.org/SaheelYadav06/chaturgpt.git
+   cd chaturgpt
