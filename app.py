@@ -6,9 +6,14 @@ import docx
 import re
 import chromadb
 from chromadb.utils import embedding_functions
-from transformers import pipeline
+from transformers import pipeline, MarianMTModel, MarianTokenizer
 import diskcache as dc
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+import logging
+
+# Suppress noisy Streamlit thread warnings
+logging.getLogger("streamlit.runtime").setLevel(logging.ERROR)
 
 # ===== Config =====
 st.set_page_config(
@@ -35,6 +40,17 @@ def get_embedder():
 @st.cache_resource
 def get_llm():
     return pipeline("text-generation", model="gpt2", max_length=1024)
+
+@st.cache_resource
+def get_summarizer():
+    return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+
+@st.cache_resource
+def get_translator(lang_code):
+    model_name = f"Helsinki-NLP/opus-mt-{lang_code}-en"
+    tokenizer = MarianTokenizer.from_pretrained(model_name)
+    model = MarianMTModel.from_pretrained(model_name)
+    return tokenizer, model
 
 # ===== Utilities =====
 def extract_text(file_path: Path):
@@ -73,6 +89,23 @@ def extract_identifiers(text):
         "phone": phone.group(0) if phone else ""
     }
 
+def summarize_text(text, lang_code):
+    summarizer = get_summarizer()
+    if lang_code != "en":
+        tokenizer, model = get_translator(lang_code)
+        tokens = tokenizer(text[:1024], return_tensors="pt", padding=True)
+        translated = model.generate(**tokens)
+        text = tokenizer.decode(translated[0], skip_special_tokens=True)
+    return summarizer(text[:1024])[0]["summary_text"]
+
+def translate_query(query, lang_code):
+    if lang_code == "en":
+        return query
+    tokenizer, model = get_translator(lang_code)
+    tokens = tokenizer(query, return_tensors="pt", padding=True)
+    translated = model.generate(**tokens)
+    return tokenizer.decode(translated[0], skip_special_tokens=True)
+
 # ===== Initialize Chroma =====
 with st.spinner("🔧 Initializing document assistant..."):
     chroma_client = chromadb.PersistentClient(path="chaturgpt_db")
@@ -81,12 +114,13 @@ with st.spinner("🔧 Initializing document assistant..."):
     llm = get_llm()
 
 # ===== Top UI =====
-st.title("🗂️ Chatur GPT- Understand Any Document, Instantly.")
-#st.markdown("*Understand Any Document, Instantly.*")
+st.title("🗂️ Chatur GPT – Understand Any Document, Instantly.")
 st.markdown("---")
 
 # ===== Language Selection =====
 language = st.selectbox("🌐 Choose your query language", ["English", "Hindi", "Telugu", "Tamil"])
+lang_map = {"Hindi": "hi", "Telugu": "te", "Tamil": "ta", "English": "en"}
+lang_code = lang_map[language]
 
 # ===== Upload & Process =====
 uploaded_files = st.file_uploader(
@@ -94,6 +128,10 @@ uploaded_files = st.file_uploader(
     type=["pdf", "docx", "txt", "csv"],
     accept_multiple_files=True
 )
+
+file_type_icons = {
+    ".pdf": "📕", ".docx": "📄", ".csv": "📊", ".txt": "📜"
+}
 
 if uploaded_files:
     with st.spinner("📄 Processing files..."):
@@ -109,14 +147,21 @@ if uploaded_files:
 
             identifiers = extract_identifiers(text)
             chunks = chunk_text(text)
-            embeddings = [embedder(c) for c in chunks]
+
+            with ThreadPoolExecutor() as executor:
+                embeddings = list(executor.map(embedder, chunks))
+
             ids = [f"{file.name}_chunk_{i}" for i in range(len(chunks))]
             metas = [{"source": file.name, **identifiers} for _ in chunks]
 
             collection.add(ids=ids, documents=chunks, embeddings=embeddings, metadatas=metas)
-            st.success(f"✅ {file.name} added to database")
+            icon = file_type_icons.get(file_path.suffix.lower(), "📁")
+            st.success(f"{icon} {file.name} added to database")
             if any(identifiers.values()):
                 st.info(f"📌 Identifiers: {identifiers}")
+
+            summary = summarize_text(text, lang_code)
+            st.info(f"📝 Summary of {file.name}:\n\n{summary}")
 
 # ===== Query Section =====
 query = st.text_input("🔍 Ask something about your documents")
@@ -130,30 +175,40 @@ def search_identifiers_first(query):
     return None
 
 if query:
-    special = search_identifiers_first(query)
+    translated_query = translate_query(query, lang_code)
+    special = search_identifiers_first(translated_query)
+
     if special:
         st.subheader("📌 Answer")
         st.write(f"💡 {special}")
     else:
-        results = collection.query(query_texts=[query], n_results=3)
-        if not results.get("documents") or not results["documents"][0]:
-            st.error("📂 No documents in the database. Please upload files first.")
-        else:
-            context = "\n\n".join(results["documents"][0])
-            prompt = f"Answer the following question using ONLY this document context:\n\n{context}\n\nQuestion: {query}"
-            answer = llm(prompt)[0]["generated_text"]
+        results = collection.query(query_texts=[translated_query], n_results=10)
+        filtered = [doc for doc in results["documents"][0] if translated_query.lower() in doc.lower()]
+        context = "\n\n".join(filtered[:3]) if filtered else "\n\n".join(results["documents"][0][:3])
 
-            st.session_state.chat_history.append({"user": query, "bot": answer})
-            cache["history"] = st.session_state.chat_history
+        prompt = f"Answer the following question using ONLY this document context:\n\n{context}\n\nQuestion: {translated_query}"
+        answer = llm(prompt)[0]["generated_text"]
 
-            st.subheader("📌 Answer")
-            st.write(f"💡 {answer}")
+        st.session_state.chat_history.append({"user": query, "bot": answer})
+        cache["history"] = st.session_state.chat_history
+
+        st.subheader("📌 Answer")
+        st.write(f"💡 {answer}")
 
 # ===== Chat History =====
 with st.expander("🕘 Chat History"):
     for turn in st.session_state.chat_history:
         st.markdown(f"**You:** {turn['user']}")
         st.markdown(f"**Assistant:** {turn['bot']}")
+
+# ===== Feedback Form =====
+with st.form("feedback_form"):
+    st.subheader("💬 Share your feedback")
+    name = st.text_input("Your name (optional)")
+    comments = st.text_area("What did you like or want improved?")
+    submitted = st.form_submit_button("Submit")
+    if submitted:
+        st.success("🙏 Thanks for your feedback!")
 
 # ===== Reset Button =====
 if st.button("Clear Knowledge Base"):
