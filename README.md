@@ -1,66 +1,79 @@
 # Chatur GPT – Multilingual Document Q&A App
 
-Chatur GPT is a **Streamlit-based universal document intelligence tool** that can **ingest, summarize, and answer questions** from documents in multiple formats and languages.  
-It’s built for speed, accuracy, and a clean, intuitive UI.
+📌 ChaturGPT
 
----
+ChaturGPT is an AI-powered multilingual chatbot built to support Indian languages. It uses Sarvam API for language understanding and generation, making it lightweight, fast, and effective for real-world use cases.
 
-## 🚀 Features
+🚀 Features
 
-- **Multi‑format document ingestion**  
-  Supports PDF, DOCX, TXT, and CSV.
+🌐 Multilingual Support – Chat seamlessly in Indian languages.
 
-- **Multilingual Q&A**  
-  Ask questions in any supported language; answers adapt to your input.
+⚡ Lightweight & Fast – Optimized for low-latency responses.
 
-- **Semantic Search**  
-  Find the most relevant chunks instantly using embedding models.
+🔒 Secure – Uses .env file for API key and config.
 
-- **Persistent Database**  
-  Store and recall processed documents between sessions with ChromaDB.
+🛠 Easy to Run – Minimal setup required.
 
-- **Caching for Speed**  
-  Fast repeat queries thanks to integrated caching.
+📖 Open Source – Contribute and make it better.
 
-- **Clean UI & UX**  
-  Streamlined design for distraction‑free interaction.
+🗂 Project Structure
+ChaturGPT/
+│── app.py              # Main Flask app  
+│── requirements.txt    # Python dependencies  
+│── .env                # Environment variables (not shared in repo)  
+│── README.md           # Project documentation  
+│── static/             # Frontend assets (if any)  
+│── templates/          # HTML templates (if any)  
 
----
+⚙️ Setup Instructions
 
-2- Create a virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate     # Linux/Mac
-venv\Scripts\activate        # Windows
-
-3- Install dependencies
-pip install -r requirements.txt
-
-💡 Future Improvements
-- Add cloud deployment (Streamlit Cloud / Hugging Face Spaces)
-- Enhance UI with theme customization
-- Expand multilingual coverage with additional models
-
-👤 Author
-Saheel – passionate about universal document intelligence, multilingual NLP, and clean, user‑friendly design.
-
-📜 License
-This project is licensed under the MIT License — see the LICENSE file for details.
-
----
-
-
-
-
-
-
-- 
-
-- 
-
-
-## 📦 Installation
+Clone the repository
 
 1. **Clone the repository**
    ```bash
    git clone https://code.swecha.org/SaheelYadav06/chaturgpt.git
    cd chaturgpt
+
+
+Create a virtual environment
+
+python -m venv venv
+source venv/bin/activate   # Linux/Mac
+venv\Scripts\activate      # Windows
+
+
+Install dependencies
+
+pip install -r requirements.txt
+
+
+Configure environment variables
+Create a .env file in the project root:
+
+SARVAM_API_KEY=your_api_key_here
+
+
+Run the app
+
+python app.py
+
+💡 Usage
+
+Open browser and go to: http://127.0.0.1:5000
+
+Start chatting in any supported language!
+
+🤝 Contributing
+
+Fork the repo
+
+Create a new branch (feature/xyz)
+
+Commit changes
+
+Submit a Pull Request
+
+📜 License
+
+This project is open-source under the MIT License.
+
