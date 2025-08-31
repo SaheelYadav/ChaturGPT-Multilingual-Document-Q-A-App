@@ -1,0 +1,13 @@
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables
+.env
+
+# Local DB
+chaturgpt_db/
+
+# Cache
+__pycache__/
+*.pyc
