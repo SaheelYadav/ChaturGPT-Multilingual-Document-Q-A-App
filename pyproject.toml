@@ -1,0 +1,25 @@
+[project]
+name = "chaturgpt"
+version = "0.1.0"
+description = "AI-powered multilingual document Q&A app built with Streamlit, ChromaDB, and sentence-transformers."
+authors = [
+    { name = "Saheel Yadav", email = "saheelyadav67@gmail.com" }
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+
+dependencies = [
+    "streamlit",
+    "chromadb",
+    "sentence-transformers",
+    "deep-translator",
+    "langchain",
+    "PyPDF2",
+    "python-docx",
+    "pandas",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

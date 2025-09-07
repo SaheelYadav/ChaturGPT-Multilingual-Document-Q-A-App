@@ -1,13 +1,27 @@
-# Virtual environment
-venv/
-.venv/
-
-# Environment variables
-.env
-
-# Local DB
-chaturgpt_db/
-
-# Cache
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.venv/
+env/
+venv/
+ENV/
+*.env
+*.lock
+
+# Streamlit cache
+.streamlit/
+uploads/
+
+# ChromaDB
+chaturgpt_db/
+
+# VSCode
+.vscode/
+
+# OS-specific
+.DS_Store
+Thumbs.db
